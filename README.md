@@ -1,4 +1,3 @@
-## Assignment S6 - Regularization 
 
 #### In this assignment. I apply L1 and L2 regularization for previous assignment final model. 
 #### Model training in following way:
