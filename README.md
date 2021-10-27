@@ -1,5 +1,5 @@
 
-#### In this assignment. I apply L1 and L2 regularization for previous assignment final model. 
+#### I apply L1 and L2 regularization for previous assignment final model. 
 #### Model training in following way:
 ####         1. Without L1 and L2 regularization.
 ####         2.With L1 regularization.
