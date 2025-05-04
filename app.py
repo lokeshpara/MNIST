@@ -96,15 +96,30 @@ def load_models():
     }
     
     for name, path in model_paths.items():
-        model = Net().to(device)
-        model.load_state_dict(torch.load(path, map_location=device))
-        model.eval()
-        models[name] = model
+        try:
+            model = Net().to(device)
+            if os.path.exists(path):
+                model.load_state_dict(torch.load(path, map_location=device))
+                model.eval()
+                models[name] = model
+                print(f"Successfully loaded model: {name}")
+            else:
+                print(f"Warning: Model file not found: {path}")
+        except Exception as e:
+            print(f"Error loading model {name}: {str(e)}")
+    
+    if not models:
+        raise RuntimeError("No models were successfully loaded. Please ensure at least one model file exists in the models directory.")
     
     return models, device
 
 # Initialize models
-models, device = load_models()
+try:
+    models, device = load_models()
+except Exception as e:
+    print(f"Error initializing models: {str(e)}")
+    models = {}
+    device = torch.device("cpu")
 
 # Get available models
 @app.route('/get_models', methods=['GET'])
