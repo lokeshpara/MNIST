@@ -22,6 +22,6 @@ build/
 # Project specific
 static/uploads/*
 !static/uploads/.gitkeep
-models/*.pth
+# models/*.pth  # Comment out this line to allow model files
 graph(test accuracy&loss)/*
 misclassified images/* 

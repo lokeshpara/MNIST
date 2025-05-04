@@ -7,6 +7,11 @@ from PIL import Image
 import io
 import base64
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -85,6 +90,7 @@ class Net(nn.Module):
 # Load all models
 def load_models():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logger.info(f"Using device: {device}")
     models = {}
     
     # Load models with different regularizations
@@ -97,27 +103,32 @@ def load_models():
     
     for name, path in model_paths.items():
         try:
+            logger.info(f"Attempting to load model: {name} from {path}")
             model = Net().to(device)
             if os.path.exists(path):
                 model.load_state_dict(torch.load(path, map_location=device))
                 model.eval()
                 models[name] = model
-                print(f"Successfully loaded model: {name}")
+                logger.info(f"Successfully loaded model: {name}")
             else:
-                print(f"Warning: Model file not found: {path}")
+                logger.warning(f"Model file not found: {path}")
         except Exception as e:
-            print(f"Error loading model {name}: {str(e)}")
+            logger.error(f"Error loading model {name}: {str(e)}")
     
     if not models:
-        raise RuntimeError("No models were successfully loaded. Please ensure at least one model file exists in the models directory.")
+        error_msg = "No models were successfully loaded. Please ensure at least one model file exists in the models directory."
+        logger.error(error_msg)
+        raise RuntimeError(error_msg)
     
     return models, device
 
 # Initialize models
 try:
+    logger.info("Initializing models...")
     models, device = load_models()
+    logger.info("Models initialized successfully")
 except Exception as e:
-    print(f"Error initializing models: {str(e)}")
+    logger.error(f"Error initializing models: {str(e)}")
     models = {}
     device = torch.device("cpu")
 
@@ -175,31 +186,35 @@ def preprocess_image(image_data):
         
         return image.to(device)
     except Exception as e:
-        print(f"Error in preprocessing: {str(e)}")
+        logger.error(f"Error in preprocessing: {str(e)}")
         raise e
 
 @app.route('/')
 def home():
-    # Get list of misclassified images
-    misclassified_images = []
-    images_dir = os.path.join('static', 'images')
-    
-    # Debug print
-    print(f"Looking for images in: {os.path.abspath(images_dir)}")
-    
-    # Check if directory exists
-    if os.path.exists(images_dir):
-        # Get all PNG files in the directory
-        for filename in os.listdir(images_dir):
-            if filename.endswith('.png'):
-                image_path = os.path.join('images', filename)
-                print(f"Found image: {image_path}")
-                misclassified_images.append(image_path)
-    else:
-        print(f"Directory not found: {images_dir}")
-    
-    print(f"Total images found: {len(misclassified_images)}")
-    return render_template('index.html', misclassified_images=misclassified_images)
+    try:
+        # Get list of misclassified images
+        misclassified_images = []
+        images_dir = os.path.join('static', 'images')
+        
+        # Debug print
+        logger.info(f"Looking for images in: {os.path.abspath(images_dir)}")
+        
+        # Check if directory exists
+        if os.path.exists(images_dir):
+            # Get all PNG files in the directory
+            for filename in os.listdir(images_dir):
+                if filename.endswith('.png'):
+                    image_path = os.path.join('images', filename)
+                    logger.info(f"Found image: {image_path}")
+                    misclassified_images.append(image_path)
+        else:
+            logger.warning(f"Directory not found: {images_dir}")
+        
+        logger.info(f"Total images found: {len(misclassified_images)}")
+        return render_template('index.html', misclassified_images=misclassified_images)
+    except Exception as e:
+        logger.error(f"Error in home route: {str(e)}")
+        return render_template('error.html', error=str(e)), 500
 
 @app.route('/learn')
 def learn():
@@ -275,7 +290,7 @@ def predict():
         })
     
     except Exception as e:
-        print(f"Error in prediction: {str(e)}")
+        logger.error(f"Error in prediction: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -290,9 +305,11 @@ def clear_temp():
                 os.remove(os.path.join(temp_dir, file))
         return jsonify({'success': True})
     except Exception as e:
+        logger.error(f"Error clearing temp files: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
     # Get port from environment variable for Render deployment
     port = int(os.environ.get('PORT', 5000))
+    logger.info(f"Starting server on port {port}")
     app.run(host='0.0.0.0', port=port) 
