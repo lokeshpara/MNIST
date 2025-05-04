@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNIST Digit Recognition App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Add Font Awesome for arrows -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .prediction-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .drawing-area {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        #canvas-container {
+            position: relative;
+        }
+
+        #drawing-canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            cursor: crosshair;
+        }
+
+        .canvas-controls {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .model-selection {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .model-select {
+            padding: 8px 16px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .model-select:hover {
+            background-color: #f0f7ff;
+        }
+
+        .prediction-result {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            
+        }
+
+        .prediction-result h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .prediction-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .confidence-bar {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: #007bff;
+            transition: width 0.3s ease;
+        }
+
+        .top-predictions {
+            margin-top: 15px;
+        }
+
+        .top-prediction-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 5px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Arrow -->
+    <a href="/" class="back-arrow" title="Go back">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="page-title">
+        <h1>Interactive MNIST Digit Recognition</h1>
+        <p class="subtitle">Draw digits and test different neural network models in real-time</p>
+    </div>
+
+    <div class="container">
+        <div class="app-container">
+            <div class="app-content">
+                <!-- Left Column - Drawing Area -->
+                <div class="drawing-section">
+                    <div id="canvas-container">
+                        <canvas id="drawing-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Column - Controls and Results -->
+                <div class="controls-section">
+                    <div class="model-selection">
+                        <label for="model-select">Select Model:</label>
+                        <select id="model-select">
+                            <option value="no_reg">Base Model</option>
+                            <option value="l1">L1 Regularization</option>
+                            <option value="l2">L2 Regularization</option>
+                            <option value="l1_l2">L1 + L2 Regularization</option>
+                        </select>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                        <button id="predictBtn" class="btn btn-primary">Predict</button>
+                    </div>
+
+                    <div class="file-upload">
+                        <label for="imageUpload" class="btn btn-secondary">Upload Image</label>
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                    </div>
+
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Processing...</p>
+                    </div>
+
+                    <div id="error-message" class="error-message"></div>
+                    <div id="success-message" class="success-message"></div>
+
+                    <div id="prediction-result" class="prediction-result" style="display: none;">
+                        <h3>Prediction Result</h3>
+                        <div class="model-name" id="model-name"></div>
+                        <div class="prediction-value" id="prediction-value">-</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidence-fill"></div>
+                        </div>
+                        <div id="top-predictions" class="top-predictions">
+                            <h4>Top Predictions</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html> 

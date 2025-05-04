@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn MNIST Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add Font Awesome for arrows -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Back Arrow -->
+    <a href="/" class="back-arrow" title="Go back">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="page-title">
+        <h1>MNIST Neural Network Implementation Guide</h1>
+        <p class="subtitle">Master the step-by-step process of building and training a neural network for digit recognition</p>
+    </div>
+
+    <div class="learning-path">
+        <!-- Step 1 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step3')">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h3>Define Transforms</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Learn about data transformations and preprocessing techniques for MNIST images.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step4')">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h3>Load Dataset</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Load and prepare the MNIST dataset for training and testing.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step5')">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h3>Visualize Data</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Explore and visualize the MNIST dataset to understand its structure.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step6')">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <h3>Define Model</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Create and understand the neural network architecture for MNIST recognition.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step7')">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <h3>Model Summary</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Analyze the model architecture and understand its components.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step8')">
+                <div class="step-header">
+                    <div class="step-number">6</div>
+                    <h3>Loss & Optimizer</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Learn about loss functions and optimizers for training the model.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step9')">
+                <div class="step-header">
+                    <div class="step-number">7</div>
+                    <h3>Training Loop</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Implement and understand the training process for the model.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 8 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step10')">
+                <div class="step-header">
+                    <div class="step-number">8</div>
+                    <h3>No Regularization</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Train the model without regularization and observe its behavior.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 9 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step11')">
+                <div class="step-header">
+                    <div class="step-number">9</div>
+                    <h3>L1 Regularization</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Implement and understand L1 regularization for the model.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 10 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step12')">
+                <div class="step-header">
+                    <div class="step-number">10</div>
+                    <h3>L2 Regularization</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Implement and understand L2 regularization for the model.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 11 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step13')">
+                <div class="step-header">
+                    <div class="step-number">11</div>
+                    <h3>L1 + L2 Regularization</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Combine L1 and L2 regularization for better model performance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 12 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step14')">
+                <div class="step-header">
+                    <div class="step-number">12</div>
+                    <h3>Evaluation</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Evaluate the model's performance using various metrics.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 13 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step15')">
+                <div class="step-header">
+                    <div class="step-number">13</div>
+                    <h3>Error Analysis</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Analyze and understand model errors and misclassifications.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 14 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step16')">
+                <div class="step-header">
+                    <div class="step-number">14</div>
+                    <h3>Visualize Results</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Create visualizations to understand model predictions and performance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 15 -->
+        <div class="step-container">
+            <div class="step-card" onclick="openModal('step17')">
+                <div class="step-header">
+                    <div class="step-number">15</div>
+                    <h3>Save Model</h3>
+                    <div class="step-status"></div>
+                </div>
+                <div class="step-content">
+                    <p class="step-description">Learn how to save and load the trained model for future use.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Template -->
+    <div id="stepModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>Overview</h3>
+                    <p id="modalOverview"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>What This Step Does</h3>
+                    <p id="modalWhat"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>Why This Step is Important</h3>
+                    <p id="modalWhy"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>Implementation</h3>
+                    <div class="code-block">
+                        <pre><code id="modalImplementation"></code></pre>
+                    </div>
+                </div>
+                
+                <div class="modal-section" id="modalMathSection">
+                    <h3>Mathematical Explanation</h3>
+                    <div class="math-block">
+                        <pre><code id="modalMath"></code></pre>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>Note</h3>
+                    <div class="note-box">
+                        <p id="modalNote"></p>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <div id="modalVisual" class="visual-aid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/learn.js') }}"></script>
+</body>
+</html> 
